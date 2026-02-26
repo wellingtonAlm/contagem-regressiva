@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contagem Regressiva</title>
+
+<style>
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: Arial, sans-serif;
+        color: white;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .container {
+        background: rgba(0,0,0,0.4);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        width: 100%;
+        max-width: 550px;
+    }
+
+    h1 {
+        margin-bottom: 25px;
+        font-size: 20px;
+    }
+
+    .contador {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .bloco {
+        min-width: 70px;
+    }
+
+    .numero {
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .label {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .totais {
+        margin-top: 20px;
+        font-size: 16px;
+        line-height: 1.8;
+        opacity: 0.9;
+    }
+
+    .destaque {
+        font-weight: bold;
+        font-size: 18px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Contagem Regressiva para 12/12/2026 às 11:00</h1>
+
+    <div class="contador" id="contador"></div>
+
+    <div class="totais">
+        <div>Faltam <span class="destaque" id="totalDias"></span> dias</div>
+        <div>Ou <span class="destaque" id="totalHoras"></span> horas</div>
+        <div>Ou <span class="destaque" id="totalMinutos"></span> minutos</div>
+        <div>Ou <span class="destaque" id="totalSegundos"></span> segundos</div>
+    </div>
+</div>
+
+<script>
+    const dataAlvo = new Date("2026-12-12T11:00:00");
+
+    function atualizarContagem() {
+        const agora = new Date();
+
+        if (agora >= dataAlvo) {
+            document.getElementById("contador").innerHTML = "<div class='numero'>O prazo chegou!</div>";
+            document.querySelector(".totais").innerHTML = "";
+            return;
+        }
+
+        let diff = dataAlvo - agora;
+
+        let totalSegundos = Math.floor(diff / 1000);
+        let totalMinutos = Math.floor(diff / (1000 * 60));
+        let totalHoras = Math.floor(diff / (1000 * 60 * 60));
+        let totalDias = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+        let segundos = totalSegundos % 60;
+        let minutos = totalMinutos % 60;
+        let horas = totalHoras % 24;
+
+        let meses = 0;
+        let dias = totalDias;
+
+        let tempData = new Date(agora);
+
+        while (true) {
+            let proximoMes = new Date(tempData.getFullYear(), tempData.getMonth() + 1, tempData.getDate(), tempData.getHours(), tempData.getMinutes(), tempData.getSeconds());
+            if (proximoMes <= dataAlvo) {
+                meses++;
+                tempData = proximoMes;
+            } else {
+                break;
+            }
+        }
+
+        dias = Math.floor((dataAlvo - tempData) / (1000 * 60 * 60 * 24));
+
+        document.getElementById("contador").innerHTML = `
+            <div class="bloco">
+                <div class="numero">${meses}</div>
+                <div class="label">Meses</div>
+            </div>
+            <div class="bloco">
+                <div class="numero">${dias}</div>
+                <div class="label">Dias</div>
+            </div>
+            <div class="bloco">
+                <div class="numero">${horas}</div>
+                <div class="label">Horas</div>
+            </div>
+            <div class="bloco">
+                <div class="numero">${minutos}</div>
+                <div class="label">Minutos</div>
+            </div>
+            <div class="bloco">
+                <div class="numero">${segundos}</div>
+                <div class="label">Segundos</div>
+            </div>
+        `;
+
+        document.getElementById("totalDias").textContent = totalDias.toLocaleString("pt-BR");
+        document.getElementById("totalHoras").textContent = totalHoras.toLocaleString("pt-BR");
+        document.getElementById("totalMinutos").textContent = totalMinutos.toLocaleString("pt-BR");
+        document.getElementById("totalSegundos").textContent = totalSegundos.toLocaleString("pt-BR");
+    }
+
+    setInterval(atualizarContagem, 1000);
+    atualizarContagem();
+</script>
+
+</body>
+</html>
